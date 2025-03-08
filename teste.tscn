@@ -23,6 +23,6 @@ grow_vertical = 2
 column_titles_visible = true
 hide_folding = true
 hide_root = true
-select_mode = 1
+select_mode = 2
 script = ExtResource("2_s2wow")
 metadata/_custom_type_script = "uid://b3ish577dip2k"

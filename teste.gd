@@ -23,16 +23,9 @@ var data = [
 	user.new(5, 'Joao', stats.new(105)),
 	user.new(10, 'Joao', stats.new(105)),
 ]
-var data1 = [
-	{ 'id':0, 'nome':'Bruno', 'health':100 },
-	{ 'id':1, 'nome':'Leo', 'health':100 },
-	{ 'id':2, 'nome':'Fabio', 'health':100 },
-	{ 'id':3, 'nome':'Carlos', 'health':100 },
-	{ 'id':04, 'nome':'Tonho', 'health':100 },
-]
 
 func _ready() -> void:
-	var table:GDTable = %Table
+	var table:GDTable = %Table #With a GDTable already in place
 	table.set_columns_definitions([
 		GDTable.ColumnDefinition.new(
 			'id', 'ID'
