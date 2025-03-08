@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgjsk41nvvixi"]
+
+[ext_resource type="Script" uid="uid://cr1l35qu84iyq" path="res://teste.gd" id="1_7w86a"]
+[ext_resource type="Script" uid="uid://b3ish577dip2k" path="res://addons/gd_table/table.gd" id="2_s2wow"]
+
+[node name="Teste" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7w86a")
+
+[node name="Table" type="Tree" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+column_titles_visible = true
+hide_folding = true
+hide_root = true
+select_mode = 1
+script = ExtResource("2_s2wow")
+metadata/_custom_type_script = "uid://b3ish577dip2k"
