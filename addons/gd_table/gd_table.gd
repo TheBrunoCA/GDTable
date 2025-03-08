@@ -1,5 +1,5 @@
 @tool
-class_name Table
+class_name GDTable
 extends Tree
 ## A table for displaying and modifying data
 ##
@@ -150,7 +150,7 @@ func _enter_tree() -> void:
 	column_titles_visible = true
 	hide_folding = true
 	hide_root = true
-	select_mode = Tree.SELECT_ROW
+	select_mode = Tree.SELECT_MULTI
 
 
 func _ready() -> void:
@@ -486,8 +486,8 @@ class ColumnDefinition:
 
 	## A default sorting algorithm.
 	static func default_sorter(a, b, asc:bool, column_def:ColumnDefinition) -> bool: ##TODO Rethink this
-		var av = Table._get_property(a, column_def.source_name, column_def.default_value)
-		var bv = Table._get_property(b, column_def.source_name, column_def.default_value)
+		var av = GDTable._get_property(a, column_def.source_name, column_def.default_value)
+		var bv = GDTable._get_property(b, column_def.source_name, column_def.default_value)
 		if typeof(av) != typeof(bv):
 			push_error(
 				'Error while sorting. %s from %s is not the same type of %s from %s' % [

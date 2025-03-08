@@ -32,27 +32,22 @@ var data1 = [
 ]
 
 func _ready() -> void:
-	var table:Table = %Table
+	var table:GDTable = %Table
 	table.set_columns_definitions([
-		Table.ColumnDefinition.new(
+		GDTable.ColumnDefinition.new(
 			'id', 'ID'
 		),
-		Table.ColumnDefinition.new(
+		GDTable.ColumnDefinition.new(
 			'nome', 'NOME', true, true
 		),
-		Table.ColumnDefinition.new(
-			'health', 'HEALTH', true
+		GDTable.ColumnDefinition.new(
+			'stat.health', 'HEALTH', true
 		)
 	])
 	table.current_page = 1
 	table.current_per_page = -1
-	table.set_data_source(data1)
+	table.set_data_source(data)
 	table.item_double_clicked.connect(print_item)
-	table.select_mode = Tree.SELECT_MULTI
-	await get_tree().create_timer(5).timeout
-	var items = table.get_selected_items()
-	for item in items:
-		print_item(item)
 
 
 func print_item(item):
