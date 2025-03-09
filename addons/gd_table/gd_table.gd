@@ -240,15 +240,14 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 			continue
 
 		if col_idx == _sorted_by_column:
-			if _sorted_by_column >= 0:
-				if _sorted_asc:
-					set_column_title(_sorted_by_column, '%s ▼' % col_def.column_name)
-				else:
-					set_column_title(_sorted_by_column, '%s ▲' % col_def.column_name)
+			if _sorted_asc:
+				set_column_title(_sorted_by_column, '%s ▼' % col_def.column_name)
+			else:
+				set_column_title(_sorted_by_column, '%s ▲' % col_def.column_name)
 		else:
 			set_column_title(col_idx, col_def.column_name)
 
-		set_column_clip_content(col_idx, col_def.important)
+		set_column_clip_content(col_idx, not col_def.important)
 		set_column_expand(col_idx, col_def.important)
 		set_column_custom_minimum_width(col_idx, col_def.minimum_width)
 
@@ -262,13 +261,10 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 		push_error(err)
 		return
 
-	var begin_idx:int = (
-			0 if page == 1
-			else (page - 1) * per_page
-	)
+	var begin_idx:int = (page - 1) * per_page
 
 	var end_idx:int = (
-			0x7FFFFFFF if per_page == -1
+			0x7FFFFFFF if per_page < 0
 			else per_page * page
 	)
 
@@ -295,6 +291,8 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 		for p_idx:int in props.size():
 			var prop:PropertyInfo = props[p_idx]
 			var column:ColumnDefinition = _columns_definitions[p_idx]
+			if column.hidden:
+				continue
 
 			t_item.set_text(p_idx, column.formatter.call(prop.property_value))
 			t_item.set_editable(p_idx, column.editable)
@@ -436,6 +434,10 @@ func _on_column_title_clicked(col_idx:int, mouse_idx:int) -> void:
 # Callback for when a item is double clicked
 func _on_item_activated() -> void:
 	var item: TreeItem = get_next_selected(null)
+
+	if item == null:
+		return
+
 	var item_idx:int = item.get_meta('item_idx')
 
 	if item_idx == null:
