@@ -340,6 +340,9 @@ func get_selected_items() -> Array:
 func _sort_by_column(column_idx:int, asc:bool) -> void:
 	var column:ColumnDefinition = _columns_definitions[column_idx]
 
+	if not column.sortable:
+		return
+
 	_data_source.sort_custom(column.sort_algorithm.bind(asc, column))
 	_sorted_by_column = column_idx
 	_sorted_asc = asc
@@ -515,6 +518,9 @@ class ColumnDefinition:
 	## Whether this column is editable.
 	var editable:bool
 
+	## Whether this column is sortable.
+	var sortable:bool
+
 	## Whether this column is important and will try to show its entire value.
 	var important:bool
 
@@ -543,6 +549,7 @@ class ColumnDefinition:
 	## [param _source_name] The name or path of the key or property that will be shown in this column.
 	## [param _column_name] The name that will be shown in the table.
 	## [param _editable] Whether this column is editable.
+	## [param _sortable] Whether this column is sortable.
 	## [param _important] Whether this column is important and will try to show its entire value.
 	## [param _hidden] Whether this column is hidden.
 	## [param _minimum_width] This columns minimum width.
@@ -558,6 +565,7 @@ class ColumnDefinition:
 		_source_name:String
 		, _column_name:String = ''
 		, _editable:bool = false
+		, _sortable:bool = true
 		, _important:bool = false
 		, _hidden:bool = false
 		, _minimum_width:int = 100
@@ -569,6 +577,7 @@ class ColumnDefinition:
 		source_name = _source_name
 		column_name = _column_name
 		editable = _editable
+		sortable = _sortable
 		important = _important
 		hidden = _hidden
 		minimum_width = _minimum_width
