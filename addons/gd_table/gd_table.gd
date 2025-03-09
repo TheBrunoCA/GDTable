@@ -211,6 +211,7 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 	reloading.emit()
 
 	if _do_not_reload:
+		_do_not_reload = false
 		return
 
 	clear()
