@@ -31,7 +31,8 @@ signal data_source_item_changed(item)
 ## Signal emitted when a item is double clicked
 signal item_double_clicked(item)
 
-##
+## Signal emitted when a error occurs
+signal error(error:GDTable.Error)
 
 #endregion
 
@@ -81,7 +82,7 @@ var _columns_definitions:Array[ColumnDefinition]
 # [param obj] is the object or dictionary from which the property or key is part of.
 # [param path] is the key or path to the desired property.
 # [param default] is the default value returned.
-static func _get_property(obj, path:String, default) -> Variant:
+static func _get_property(obj, path:String, default = null) -> Variant:
 	var parts: PackedStringArray = path.split('.', false)
 	var current_value = obj
 
@@ -141,6 +142,21 @@ static func _set_property(obj, path: String, value: Variant) -> void:
 	var final_part:String = parts[-1]
 	current.set(final_part, value)
 
+
+static func _validate_data(data_source:Array, col_defs:Array[ColumnDefinition]) -> bool:
+	return data_source.all(
+		func(item) -> bool:
+			if item is Dictionary:
+				return col_defs.all(func(col:ColumnDefinition) -> bool:
+					return _get_property(item, col.source_name) != null
+				)
+			elif item is Object:
+				return col_defs.all(func(col:ColumnDefinition) -> bool:
+					return _get_property(item, col.source_name) != null
+				)
+			else:
+				return false
+	)
 
 #endregion
 
@@ -205,13 +221,22 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 		return
 
 	if _columns_definitions.is_empty():
-		push_error('Columns Definitions must be set before reloading.')
+		var err:GDTable.Error = GDTable.Error.new(
+			reload,
+			'Testing if _columns_definitions is valid.',
+			'Columns definitions cannot be empty.'
+		)
+		error.emit(err)
+		push_error(err)
 		return
 
 	columns = _columns_definitions.size()
 
 	for col_idx:int in _columns_definitions.size():
 		var col_def:ColumnDefinition = _columns_definitions[col_idx]
+
+		if col_def.hidden:
+			continue
 
 		if col_idx == _sorted_by_column:
 			if _sorted_by_column >= 0:
@@ -227,7 +252,13 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 		set_column_custom_minimum_width(col_idx, col_def.minimum_width)
 
 	if page > 1 and per_page < 0:
-		push_error('page cannot be bigger than 1 if per_page is lesser than 1.')
+		var err:GDTable.Error = GDTable.Error.new(
+			reload,
+			'Testing if page and per_page values are valid.',
+			'page cannot be bigger than 1 if per_page is lesser than 1.'
+		)
+		error.emit(err)
+		push_error(err)
 		return
 
 	var begin_idx:int = (
@@ -244,6 +275,16 @@ func reload(page:int = current_page, per_page:int = current_per_page) -> void:
 		return
 
 	var paged_source:Array = _data_source.slice(begin_idx, end_idx)
+
+	if not _validate_data(paged_source, _columns_definitions):
+		var err:GDTable.Error = GDTable.Error.new(
+			reload,
+			'Testing if paged_source is valid.',
+			'Not all paged_source items have all the required properties.'
+		)
+		error.emit(err)
+		push_error(err)
+		return
 
 	for item_idx:int in paged_source.size():
 		var item = paged_source[item_idx]
@@ -276,7 +317,13 @@ func get_selected_items() -> Array:
 		var item_idx:int = selected_item.get_meta('item_idx')
 
 		if item_idx == null:
-			push_error('For some reason, item_idx is null.')
+			var err:GDTable.Error = GDTable.Error.new(
+				get_selected_items,
+				'Testing if meta_data item_idx is null.',
+				'For some reason, item_idx is null.'
+			)
+			error.emit(err)
+			push_error(err)
 			return []
 
 		var data_source_item = _data_source[item_idx]
@@ -303,7 +350,13 @@ func _sort_by_column(column_idx:int, asc:bool) -> void:
 # Get all the properties from an object which are in [member _columns_definitions]
 func _get_properties(obj) -> Array[PropertyInfo]:
 	if _columns_definitions.is_empty():
-		push_error('_columns_definitions should not be empty here.')
+		var err:GDTable.Error = GDTable.Error.new(
+			_get_properties,
+			'Testing if _columns_definitions is empty.',
+			'Columns definitions should not be empty.'
+		)
+		error.emit(err)
+		push_error(err)
 		return []
 
 	var props:Array[PropertyInfo] = []
@@ -333,7 +386,13 @@ func _on_item_edited() -> void:
 	var item_idx:int = item.get_meta('item_idx')
 
 	if item_idx == null:
-		push_error('For some reason, item_idx is null.')
+		var err:GDTable.Error = GDTable.Error.new(
+			_on_item_edited,
+			'Testing if meta_data item_idx is null.',
+			'For some reason, item_idx is null.'
+		)
+		error.emit(err)
+		push_error(err)
 		return
 
 	var data_source_item = _data_source[item_idx]
@@ -376,7 +435,13 @@ func _on_item_activated() -> void:
 	var item_idx:int = item.get_meta('item_idx')
 
 	if item_idx == null:
-		push_error('For some reason, item_idx is null.')
+		var err:GDTable.Error = GDTable.Error.new(
+			_on_item_activated,
+			'Testing if meta_data item_idx is null.',
+			'For some reason, item_idx is null.'
+		)
+		error.emit(err)
+		push_error(err)
 		return
 
 	var data_source_item = _data_source[item_idx]
@@ -390,6 +455,28 @@ func _on_item_activated() -> void:
 #endregion
 
 #region Internal Classes
+
+class Error:
+	## Utility class to hold errors
+
+
+	## Where the error occurred
+	var where:StringName
+
+	## When the error occurred
+	var when_:String
+
+	## Error message
+	var msg:String
+
+	func _init(_where:Callable, _when:String, _msg:String) -> void:
+		where = _where.get_method()
+		when_ = _when
+		msg = _msg
+
+	func _to_string() -> String:
+		return 'Error:\nWhere:	%s\nWhen:	%s\nMsg:	%s' % [where, when_, msg]
+
 
 class PropertyInfo:
 	## Utility class to hold objects properties
@@ -425,12 +512,14 @@ class ColumnDefinition:
 					else source_name
 			)
 
-
 	## Whether this column is editable.
 	var editable:bool
 
 	## Whether this column is important and will try to show its entire value.
 	var important:bool
+
+	## Whether this column is hidden
+	var hidden:bool
 
 	## This columns minimum width.
 	var minimum_width:int
@@ -455,10 +544,13 @@ class ColumnDefinition:
 	## [param _column_name] The name that will be shown in the table.
 	## [param _editable] Whether this column is editable.
 	## [param _important] Whether this column is important and will try to show its entire value.
+	## [param _hidden] Whether this column is hidden.
 	## [param _minimum_width] This columns minimum width.
 	## [param _default_value] This column default value.
 	## [param _formatter] The Callable that will be used to get the value that will be shown.
 	## Must accept one argument, the original value, and return the formatted value.
+	## [param _reverse_formatter] The Callable that will be used to set the value back.
+	## Must accept one argument, the value, and return the formatted value.
 	## [param _sort_algorithm] The Callable that will be used to sort the data by this column.
 	## Must accept two values that will be compared, a boolean whether its ascending or not
 	## and a [Table.ColumnDefinition] object.
@@ -467,6 +559,7 @@ class ColumnDefinition:
 		, _column_name:String = ''
 		, _editable:bool = false
 		, _important:bool = false
+		, _hidden:bool = false
 		, _minimum_width:int = 100
 		, _default_value:Variant = 'N/A'
 		, _formatter:Callable = func(x): return str(x)
@@ -477,6 +570,7 @@ class ColumnDefinition:
 		column_name = _column_name
 		editable = _editable
 		important = _important
+		hidden = _hidden
 		minimum_width = _minimum_width
 		default_value = _default_value
 		formatter = _formatter
