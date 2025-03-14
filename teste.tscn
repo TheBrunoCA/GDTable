@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dgjsk41nvvixi"]
 
-[ext_resource type="Script" uid="uid://cr1l35qu84iyq" path="res://teste.gd" id="1_7w86a"]
+[ext_resource type="Script" uid="uid://b7iw80l6ocevo" path="res://teste.gd" id="1_7w86a"]
 [ext_resource type="Script" uid="uid://b3ish577dip2k" path="res://addons/gd_table/gd_table.gd" id="2_s2wow"]
 
 [node name="Teste" type="Control"]

@@ -3,26 +3,26 @@ GDTable - A Flexible and Customizable Table Component for Godot
 GDTable is a table component designed for the Godot Engine, enabling developers to easily display, edit, and manage tabular data in their projects.
 Key Features
 
-    Dynamic Data Binding:
-    Bind your table to arrays of objects or dictionaries, with support for nested properties using dot notation (e.g., player.stats.health).
+	Dynamic Data Binding:
+	Bind your table to arrays of objects or dictionaries, with support for nested properties using dot notation (e.g., player.stats.health).
 
-    Customizable Columns:
-    Define columns with custom names, formatters, sorting algorithms, and editing capabilities.
+	Customizable Columns:
+	Define columns with custom names, formatters, sorting algorithms, and editing capabilities.
 
-    Pagination Support:
-    Easily handle large datasets with built-in pagination.
+	Pagination Support:
+	Easily handle large datasets with built-in pagination.
 
-    Sorting and Filtering:
-    Sort data by any column, with support for custom sorting algorithms.
+	Sorting and Filtering:
+	Sort data by any column, with support for custom sorting algorithms.
 
-    Editable Cells:
-    Enable or disable cell editing on a per-column basis. GDTable ensures data integrity by allowing reversible formatting for editable fields.
+	Editable Cells:
+	Enable or disable cell editing on a per-column basis. GDTable ensures data integrity by allowing reversible formatting for editable fields.
 
-    Event-Driven Design:
-    Built-in signals for common events like item selection, double-clicks, and data changes, making it easy to integrate with your game logic.
+	Event-Driven Design:
+	Built-in signals for common events like item selection, double-clicks, and data changes, making it easy to integrate with your game logic.
 
-    Fully Documented:
-    Comprehensive documentation and examples make it easy to get started.
+	Fully Documented:
+	Comprehensive documentation and examples make it easy to get started.
 
 Example Usage
 ```gdscript
